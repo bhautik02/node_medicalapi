@@ -26,9 +26,43 @@ exports.likeProduct = async (req, res, next) => {
 
     res.status(201).json({
       status: 'success',
-      data: {
-        like,
-      },
+      message: 'Your like has been added.',
+    });
+  } catch (error) {
+    return res.status(404).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+};
+
+exports.disLikeProduct = async (req, res, next) => {
+  try {
+    if (req.body.disLiked === 'false') {
+      throw new Error('You have not disLiked Product...');
+    }
+
+    const product = await LikeProduct.findOne({ product: req.params.id });
+    let like;
+
+    if (!product) {
+      like = await LikeProduct.create({
+        product: req.params.id,
+        disLiked: true,
+      });
+    } else {
+      let totalLikes = product.likesQuantity;
+      totalLikes -= 1;
+      if (totalLikes < 0) totalLikes = 0;
+      like = await LikeProduct.updateOne(
+        { product: req.params.id },
+        { likesQuantity: totalLikes }
+      );
+    }
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Your disLike has been added.',
     });
   } catch (error) {
     return res.status(404).json({

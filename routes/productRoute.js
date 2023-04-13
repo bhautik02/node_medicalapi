@@ -30,7 +30,8 @@ productRouter
 
 productRouter
   .post('/:id/comment', authentication, commentController.createComment)
-  .post('/:id/like', authentication, likeController.likeProduct);
+  .post('/:id/like', authentication, likeController.likeProduct)
+  .post('/:id/disLike', authentication, likeController.disLikeProduct);
 
 productRouter
   .route('/productByType/:productType')

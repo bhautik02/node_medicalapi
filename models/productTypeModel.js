@@ -4,6 +4,7 @@ const productTypeSchema = new mongoose.Schema({
   productType: {
     type: String,
     unique: [true, 'productType allready exist..'],
+    enum: ['shampoo', 'capsule', 'oximeter', 'device'],
   },
 });
 

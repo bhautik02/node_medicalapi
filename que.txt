@@ -27,3 +27,4 @@ comment on product
 
 
 dislike
+selected product type
