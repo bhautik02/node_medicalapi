@@ -3,8 +3,8 @@ const Product = require('./../models/productModel');
 const mongoose = require('mongoose');
 
 exports.getAllProduct = handlerFactory.getAll(Product);
-exports.deleteProduct = handlerFactory.deleteOne(Product);
 exports.updateProduct = handlerFactory.updateOne(Product);
+exports.deleteProduct = handlerFactory.deleteOne(Product);
 exports.getProduct = handlerFactory.getOne(Product);
 
 // exports.createProduct = handlerFactory.createOne(Product);
@@ -18,7 +18,9 @@ exports.createProduct = async (req, res, next) => {
       price: req.body.price,
       description: req.body.description,
       productImage,
+      createdAt: Date.now(),
     });
+    // const product = await Product.create(req.body);
     res.status(200).json({
       status: 'success',
       data: {

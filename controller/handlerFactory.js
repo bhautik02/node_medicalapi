@@ -21,6 +21,29 @@ exports.getAll = Model => async (req, res, next) => {
   }
 };
 
+exports.getOne = Model => async (req, res, next) => {
+  try {
+    let doc = await Model.findById(req.params.id)
+      .populate({
+        path: 'productType',
+        select: 'productType',
+      })
+      .populate('comment');
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        data: doc,
+      },
+    });
+  } catch (error) {
+    return res.status(404).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+};
+
 exports.createOne = Model => async (req, res, next) => {
   try {
     const doc = await Model.create(req.body);
@@ -66,29 +89,6 @@ exports.updateOne = Model => async (req, res, next) => {
     //   path: 'productType',
     //   select: 'productType',
     // });
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        data: doc,
-      },
-    });
-  } catch (error) {
-    return res.status(404).json({
-      status: 'failed',
-      message: error.message,
-    });
-  }
-};
-
-exports.getOne = Model => async (req, res, next) => {
-  try {
-    let doc = await Model.findById(req.params.id)
-      .populate({
-        path: 'productType',
-        select: 'productType',
-      })
-      .populate('comment');
 
     res.status(200).json({
       status: 'success',
