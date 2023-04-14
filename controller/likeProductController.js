@@ -4,7 +4,7 @@ const DislikeProduct = require('./../models/disLikedProductModel');
 
 exports.likeProduct = async (req, res, next) => {
   try {
-    console.log(req.userId);
+    // console.log(req.userId);
     const product = await LikeProduct.findOne({
       product: req.params.id,
       user: req.userId,
@@ -20,10 +20,6 @@ exports.likeProduct = async (req, res, next) => {
       product: req.params.id,
     });
 
-    if (!like) {
-      throw new Error('Like not Added, please try again...');
-    }
-
     const LikeAdded = await LikeProduct.findOne({
       product: req.params.id,
       user: req.userId,
@@ -35,10 +31,6 @@ exports.likeProduct = async (req, res, next) => {
         product: req.params.id,
         user: req.userId,
       });
-
-      if (!product1) {
-        throw new Error('disLike not deleted, please try again...');
-      }
 
       res.status(201).json({
         status: 'success',
@@ -72,10 +64,6 @@ exports.disLikeProduct = async (req, res, next) => {
       product: req.params.id,
     });
 
-    if (!disLike) {
-      throw new Error('disLike not added, please try again...');
-    }
-
     const disLikeAdded = await DislikeProduct.findOne({
       product: req.params.id,
       user: req.userId,
@@ -87,10 +75,6 @@ exports.disLikeProduct = async (req, res, next) => {
         product: req.params.id,
         user: req.userId,
       });
-
-      if (!product1) {
-        throw new Error('Like not deleted, please try again...');
-      }
 
       res.status(201).json({
         status: 'success',
@@ -136,6 +120,7 @@ exports.mostLikedProduct = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       data: {
+        likes: product[0].count,
         mostLikedProduct,
       },
     });
