@@ -18,6 +18,7 @@ exports.createProduct = async (req, res, next) => {
       price: req.body.price,
       description: req.body.description,
       productImage,
+      productType: req.body.productType,
       createdAt: Date.now(),
     });
     // const product = await Product.create(req.body);
@@ -30,7 +31,7 @@ exports.createProduct = async (req, res, next) => {
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error,
+      message: error.message,
     });
   }
 };
@@ -44,35 +45,8 @@ exports.getProductByProductType = async (req, res, next) => {
           productType: new mongoose.Types.ObjectId(req.params.productType),
         },
       },
-      {
-        $unwind: {
-          path: '$Match',
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      //   {
-      //     $lookup: {
-      //       from: 'Producttype',
-      //       localField: 'productType',
-      //       foreignField: '_id',
-      //       as: 'result',
-      //     },
-      //   },
-      //   {
-      //     $unwind: {
-      //       path: '$result',
-      //       preserveNullAndEmptyArrays: true,
-      //     },
-      //   },
-      //   {
-      //     $project: {
-      //       name: 1,
-      //       result: {
-      //         productType: 1,
-      //       },
-      //     },
-      //   },
     ]);
+
     res.status(200).json({
       status: 'success',
       data: {

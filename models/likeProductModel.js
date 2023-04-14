@@ -6,18 +6,13 @@ const likeProductSchema = new mongoose.Schema({
     default: false,
     enum: [true, false],
   },
-  disLiked: {
-    type: Boolean,
-    default: false,
-    enum: [true, false],
-  },
-  likesQuantity: {
-    type: Number,
-    default: 0,
-  },
   product: {
     type: mongoose.Schema.ObjectId,
     ref: 'Product',
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
   },
   createdAt: {
     type: Date,

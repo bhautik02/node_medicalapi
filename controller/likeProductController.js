@@ -1,33 +1,52 @@
-const LikeProduct = require('../models/likeProduct');
+const LikeProduct = require('../models/likeProductModel');
+const Product = require('../models/productModel');
+const DislikeProduct = require('./../models/disLikedProductModel');
 
 exports.likeProduct = async (req, res, next) => {
   try {
-    if (req.body.liked === 'false') {
-      throw new Error('You have not liked Product...');
+    console.log(req.userId);
+    const product = await LikeProduct.findOne({
+      product: req.params.id,
+      user: req.userId,
+    });
+
+    if (product) {
+      throw new Error('You already liked this Product.');
     }
 
-    const product = await LikeProduct.findOne({ product: req.params.id });
-    let like;
+    const like = await LikeProduct.create({
+      liked: req.body.liked,
+      user: req.userId,
+      product: req.params.id,
+    });
 
-    if (!product) {
-      like = await LikeProduct.create({
-        liked: req.body.liked,
+    if (!like) {
+      throw new Error('Like not Added, please try again...');
+    }
+
+    const LikeAdded = await LikeProduct.findOne({
+      product: req.params.id,
+      user: req.userId,
+    });
+    // console.log(disLikeAdded);
+
+    if (LikeAdded) {
+      const product1 = await DislikeProduct.findOneAndDelete({
         product: req.params.id,
-        likesQuantity: 1,
+        user: req.userId,
+      });
+
+      if (!product1) {
+        throw new Error('disLike not deleted, please try again...');
+      }
+
+      res.status(201).json({
+        status: 'success',
+        message: 'Your Like has been added.',
       });
     } else {
-      let totalLikes = product.likesQuantity;
-      totalLikes++;
-      like = await LikeProduct.updateOne(
-        { product: req.params.id },
-        { likesQuantity: totalLikes }
-      );
+      throw new Error('Something went wrong.');
     }
-
-    res.status(201).json({
-      status: 'success',
-      message: 'Your like has been added.',
-    });
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
@@ -38,32 +57,48 @@ exports.likeProduct = async (req, res, next) => {
 
 exports.disLikeProduct = async (req, res, next) => {
   try {
-    if (req.body.disLiked === 'false') {
-      throw new Error('You have not disLiked Product...');
+    const product = await DislikeProduct.findOne({
+      product: req.params.id,
+      user: req.userId,
+    });
+
+    if (product) {
+      throw new Error('You already disLiked this Product.');
     }
 
-    const product = await LikeProduct.findOne({ product: req.params.id });
-    let like;
+    const disLike = await DislikeProduct.create({
+      disLiked: req.body.disLiked,
+      user: req.userId,
+      product: req.params.id,
+    });
 
-    if (!product) {
-      like = await LikeProduct.create({
+    if (!disLike) {
+      throw new Error('disLike not added, please try again...');
+    }
+
+    const disLikeAdded = await DislikeProduct.findOne({
+      product: req.params.id,
+      user: req.userId,
+    });
+    console.log(disLikeAdded);
+
+    if (disLikeAdded) {
+      const product1 = await LikeProduct.findOneAndDelete({
         product: req.params.id,
-        disLiked: true,
+        user: req.userId,
+      });
+
+      if (!product1) {
+        throw new Error('Like not deleted, please try again...');
+      }
+
+      res.status(201).json({
+        status: 'success',
+        message: 'Your disLike has been added.',
       });
     } else {
-      let totalLikes = product.likesQuantity;
-      totalLikes -= 1;
-      if (totalLikes < 0) totalLikes = 0;
-      like = await LikeProduct.updateOne(
-        { product: req.params.id },
-        { likesQuantity: totalLikes }
-      );
+      throw new Error('Something went wrong.');
     }
-
-    res.status(201).json({
-      status: 'success',
-      message: 'Your disLike has been added.',
-    });
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
@@ -74,22 +109,34 @@ exports.disLikeProduct = async (req, res, next) => {
 
 exports.mostLikedProduct = async (req, res, next) => {
   try {
-    const product = await LikeProduct.find(
-      {},
+    const product = await LikeProduct.aggregate([
       {
-        _id: 1,
-        likesQuantity: 1,
-        product: 1,
-        createdAt: 1,
-      }
-    )
-      .sort({ likesQuantity: -1 })
-      .populate('product');
+        $group: {
+          _id: '$product',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    if (!product) {
+      throw new Error('Users Not liked any product...');
+    }
+
+    const mostLikedProduct = await Product.findById(product[0]._id);
+
+    if (!mostLikedProduct) {
+      throw new Error(
+        'facing Isuue to get mostLikedProduct, please try again...'
+      );
+    }
 
     res.status(200).json({
       status: 'success',
       data: {
-        mostLikedProduct: product[0],
+        mostLikedProduct,
       },
     });
   } catch (error) {

@@ -28,3 +28,6 @@ comment on product
 
 dislike
 selected product type
+
+not addedfile error
+authentication message

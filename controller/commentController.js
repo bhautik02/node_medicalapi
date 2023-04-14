@@ -2,12 +2,15 @@ const Comment = require('./../models/commentModel');
 
 exports.createComment = async (req, res, next) => {
   try {
-    console.log('pid', req.params.id);
     const comment = await Comment.create({
       comment: req.body.comment,
       product: req.params.id,
       user: req.userId,
     });
+
+    if (!comment) {
+      throw new Error('Comment not created, please try again...');
+    }
 
     res.status(201).json({
       status: 'success',
@@ -22,4 +25,3 @@ exports.createComment = async (req, res, next) => {
     });
   }
 };
-// exports.getAllComment = handlerFactory.getAll(Comment);
