@@ -23,11 +23,3 @@ delete product types(if any product using that product type then product type sh
 get most recent product
 get most liked product
 comment on product
-
-
-
-dislike
-selected product type
-
-not addedfile error
-authentication message

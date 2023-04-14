@@ -38,7 +38,6 @@ const productSchema = new mongoose.Schema(
     },
     createdAt: {
       type: Date,
-      // default: Date.now(),
     },
   },
   {
@@ -52,11 +51,6 @@ productSchema.virtual('comment', {
   foreignField: 'product',
   localField: '_id',
 });
-
-// productSchema.pre('save', next => {
-//   this.createdAt = Date.now();
-//   next();
-// });
 
 const Product = mongoose.model('Product', productSchema);
 

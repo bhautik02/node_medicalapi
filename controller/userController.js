@@ -17,7 +17,7 @@ exports.signup = async (req, res, next) => {
     await sendEmail({
       email: newUser.email,
       subject: 'You have Registered successfully...',
-      message: `WELCOME ${newUser.name}\nId:${newUser.id}\nPassword:${newUser.password}`,
+      message: `WELCOME ${newUser.name}\nId:${newUser.email}\nPassword:${newUser.password}`,
     });
 
     res.status(200).json({
