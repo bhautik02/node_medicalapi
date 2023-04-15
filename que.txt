@@ -8,6 +8,8 @@ APIS-
 register user
 login user
 
+
+
 create product types
 get all product types
 

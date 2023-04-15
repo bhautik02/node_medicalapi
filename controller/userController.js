@@ -35,17 +35,17 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
+    // console.log(email, password);
 
     // 1) Check if email and password exist
     if (!email || !password) {
-      return next('provide email and password');
+      throw new Error('provide email and password');
     }
     // 2) Check if user exists && password is correct
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || password !== user.password) {
-      return next('Incorrect email or password');
+      throw new Error('Incorrect email or password');
     }
 
     // 3) If everything ok, send token to client

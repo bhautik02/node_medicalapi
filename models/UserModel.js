@@ -15,12 +15,14 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    trim: true,
     required: [true, 'Please provide a password'],
     minlength: 8,
     select: false,
   },
   passwordConfirm: {
     type: String,
+    trim: true,
     required: [true, 'Please confirm your password'],
     validate: {
       validator: function (el) {
