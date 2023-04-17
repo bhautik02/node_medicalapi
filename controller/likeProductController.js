@@ -40,9 +40,9 @@ exports.likeProduct = async (req, res, next) => {
       throw new Error('Something went wrong.');
     }
   } catch (error) {
-    return res.status(404).json({
+    return res.status(403).json({
       status: 'failed',
-      message: error.message,
+      message: err.message,
     });
   }
 };
@@ -84,7 +84,7 @@ exports.disLikeProduct = async (req, res, next) => {
       throw new Error('Something went wrong.');
     }
   } catch (error) {
-    return res.status(404).json({
+    return res.status(403).json({
       status: 'failed',
       message: error.message,
     });
@@ -127,7 +127,7 @@ exports.mostLikedProduct = async (req, res, next) => {
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message: 'please try again...',
     });
   }
 };

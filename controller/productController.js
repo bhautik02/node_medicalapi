@@ -29,16 +29,28 @@ exports.createProduct = async (req, res, next) => {
       },
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Product with this id already exists.',
+      });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(404).json({
+        status: 'failed',
+        message: error.message,
+      });
+    }
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      error,
     });
   }
 };
 
 exports.getProductByProductType = async (req, res, next) => {
   try {
-    console.log(req.params.productType);
+    // console.log(req.params.productType);
     let product = await Product.aggregate([
       {
         $match: {
@@ -46,6 +58,11 @@ exports.getProductByProductType = async (req, res, next) => {
         },
       },
     ]);
+
+    if (product.length == 0)
+      throw new Error(
+        "ProductType with this id doesn't exits or Productype doesn't have a product"
+      );
 
     res.status(200).json({
       status: 'success',
@@ -56,7 +73,7 @@ exports.getProductByProductType = async (req, res, next) => {
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message: 'Enter valid product id...',
     });
   }
 };
@@ -81,7 +98,15 @@ exports.mostRecentProduct = async (req, res, next) => {
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message:
+        "couldn't get most recent value due to some error, please try again later",
     });
   }
+};
+
+exports.testMethod = (req, res) => {
+  console.log('sdfdsfd');
+  res.status(200).json({
+    success: true,
+  });
 };

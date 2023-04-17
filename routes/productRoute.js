@@ -7,6 +7,11 @@ const { upload } = require('./../controller/imageController');
 
 const productRouter = express.Router();
 
+/**
+ * /test-Product
+ * 2 products
+ */
+
 productRouter
   .route('/')
   .get(productController.getAllProduct)
@@ -21,6 +26,7 @@ productRouter
   .get(productController.mostRecentProduct);
 
 productRouter.route('/most-liked-product').get(likeController.mostLikedProduct);
+productRouter.get('/test-product', productController.testMethod);
 
 productRouter
   .route('/:id')

@@ -17,7 +17,7 @@ const authentication = async (req, res, next) => {
   } catch (error) {
     res.status(401).json({
       status: 'failed',
-      message: error.message,
+      message: 'You are not authenticated, try again later.',
     });
   }
   next();

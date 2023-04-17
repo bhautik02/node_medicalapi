@@ -1,92 +1,101 @@
 exports.getAll = Model => async (req, res, next) => {
   try {
-    const docs = await Model.find();
+    const products = await Model.find();
 
     // SEND RESPONSE
     res.status(200).json({
       status: 'success',
-      results: docs.length,
-      data: {
-        docs,
-      },
+      results: products.length,
+      products,
     });
 
-    if (!docs) {
+    if (!products) {
       throw new Error('ProductList is empty...');
     }
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message:
+        'Products not found due to some error, please try again later...',
     });
   }
 };
 
 exports.getOne = Model => async (req, res, next) => {
   try {
-    let doc = await Model.findById(req.params.id)
+    let product = await Model.findById(req.params.id)
       .populate({
         path: 'productType',
         select: 'productType',
       })
       .populate('comment');
 
-    if (!doc) {
+    if (!product) {
       throw new Error("Product with this id doesn't exists...");
     }
 
     res.status(200).json({
       status: 'success',
-      data: {
-        doc,
-      },
+      product,
     });
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message: 'Product not found with this ID, please check your id...',
     });
   }
 };
 
 exports.createOne = Model => async (req, res, next) => {
   try {
-    const doc = await Model.create(req.body);
+    const product = await Model.create(req.body);
 
-    if (!doc) {
+    if (!product) {
       throw new Error('Product not created, please try again...');
     }
 
     res.status(201).json({
       status: 'success',
-      data: {
-        doc,
-      },
+      product,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Product with this id already exists.',
+      });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(404).json({
+        status: 'failed',
+        message: error.message,
+      });
+    }
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      error,
     });
   }
 };
 
 exports.deleteOne = Model => async (req, res, next) => {
   try {
-    const doc = await Model.findByIdAndDelete(req.params.id);
+    const product = await Model.findByIdAndDelete(req.params.id);
 
-    if (!doc) {
-      throw new Error('Product not deleted, please try again...');
+    if (!product) {
+      throw new Error(
+        "Product with this id doesn't exists, please check again..."
+      );
     }
 
-    res.status(204).json({
+    res.status(200).json({
       status: 'success',
-      data: null,
+      message: 'Product successfully deleted...',
     });
   } catch (error) {
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      message: 'Product is not deleted, please try again later...',
     });
   }
 };
@@ -94,25 +103,37 @@ exports.deleteOne = Model => async (req, res, next) => {
 exports.updateOne = Model => async (req, res, next) => {
   try {
     // console.log(req.params.id);
-    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+    const product = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
 
-    if (!doc) {
-      throw new Error('Product not updated, please try again...');
+    if (!product) {
+      throw new Error(
+        "Product with this id doesn't exists, please try again..."
+      );
     }
 
     res.status(200).json({
       status: 'success',
-      data: {
-        doc,
-      },
+      product,
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Product with this id already exists.',
+      });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(404).json({
+        status: 'failed',
+        message: error.message,
+      });
+    }
     return res.status(404).json({
       status: 'failed',
-      message: error.message,
+      error,
     });
   }
 };

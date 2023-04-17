@@ -2,16 +2,25 @@ const handlerFactory = require('./handlerFactory');
 const User = require('./../models/UserModel');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('./../utils/email');
+const bcrypt = require('bcryptjs');
 
 exports.getAllUser = handlerFactory.getAll(User);
 
 exports.signup = async (req, res, next) => {
   try {
+    password = req.body.password;
+    if (password.includes(' ')) {
+      throw new Error(
+        'You can not enter space as a password, Change your password!!!'
+      );
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, 12);
+
     const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm,
+      password: encryptedPassword,
     });
 
     await sendEmail({
@@ -27,7 +36,7 @@ exports.signup = async (req, res, next) => {
   } catch (error) {
     res.status(401).json({
       status: 'failed',
-      message: error.message,
+      message: 'User not Created due to some error, please trin again later..',
     });
   }
 };
@@ -44,7 +53,7 @@ exports.login = async (req, res, next) => {
     // 2) Check if user exists && password is correct
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || password !== user.password) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new Error('Incorrect email or password');
     }
 
@@ -56,14 +65,12 @@ exports.login = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       token,
-      data: {
-        user,
-      },
+      user,
     });
   } catch (error) {
     res.status(401).json({
       status: 'failed',
-      message: error.message,
+      message: 'User not login due to some error, please try again later..',
     });
   }
 };
