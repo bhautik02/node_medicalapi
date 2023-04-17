@@ -24,9 +24,7 @@ exports.createProduct = async (req, res, next) => {
     // const product = await Product.create(req.body);
     res.status(200).json({
       status: 'success',
-      data: {
-        product,
-      },
+      product,
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -66,9 +64,7 @@ exports.getProductByProductType = async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
-      data: {
-        product,
-      },
+      product,
     });
   } catch (error) {
     return res.status(404).json({
@@ -91,9 +87,7 @@ exports.mostRecentProduct = async (req, res, next) => {
     ).sort({ createdAt: -1 });
     res.status(200).json({
       status: 'success',
-      data: {
-        product: product[0],
-      },
+      product: product[0],
     });
   } catch (error) {
     return res.status(404).json({

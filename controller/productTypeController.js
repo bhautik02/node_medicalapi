@@ -20,16 +20,14 @@ exports.deleteProduct = async (req, res, next) => {
     if (product.length !== 0) {
       return res.status(404).json({
         status: 'failed',
-        message: `You can't delete this Type...`,
+        message: `You can't delete this Type beacause it has a product with this productId...`,
       });
     }
     const doc = await ProductType.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
       status: 'success',
-      data: {
-        data: null,
-      },
+      data: null,
     });
   } catch (error) {
     return res.status(404).json({
